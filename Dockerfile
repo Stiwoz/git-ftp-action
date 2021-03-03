@@ -7,6 +7,9 @@ ENV CPPFLAGS=-I/usr/local/include
 ENV LDFLAGS="-L/usr/local/lib -Wl,-rpath,/usr/local/lib"
 ENV LIBS="-ldl"
 
+RUN cp /etc/apt/sources.list /etc/apt/sources.list~
+RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
+
 # Install cURL libs
 RUN apt-get update
 RUN apt-get install build-essential debhelper libssh-dev -y
