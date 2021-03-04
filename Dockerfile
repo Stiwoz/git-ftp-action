@@ -11,8 +11,9 @@ ENV LIBS="-ldl"
 RUN apt-get update
 RUN apt-get install build-essential debhelper libssh-dev -y
 
+RUN mkdir /var/cache/apt/archives/partial/
 RUN chown -Rv _apt:root /var/cache/apt/archives/partial/
-RUN chmod -Rv 700 /var/cache/apt/archives/partial/
+RUN chmod -Rv 755 /var/cache/apt/archives/partial/
 WORKDIR /opt/
 
 # Fetch cURL source code
@@ -20,7 +21,9 @@ RUN cp /etc/apt/sources.list /etc/apt/sources.list~
 RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 RUN apt-get update
 
+USER _apt
 RUN apt source curl
+USER root
 WORKDIR /opt/curl-*/
 RUN sed -i -e "s@CONFIGURE_ARGS += --without-libssh2@CONFIGURE_ARGS += --with-libssh2@g" rules
 RUN apt install --reinstall libcurl4-openssl-dev
