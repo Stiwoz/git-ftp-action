@@ -18,14 +18,22 @@ RUN cp /etc/apt/sources.list /etc/apt/sources.list~
 RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 RUN apt-get update
 
-RUN apt-get build-dep -y curl
-RUN ls -lat
-RUN cd curl-*/debian/ && sed -i -e "s@CONFIGURE_ARGS += --without-libssh2@CONFIGURE_ARGS += --with-libssh2@g" rules
-RUN cd curl-*/ && dpkg-buildpackage -uc -us -b
-RUN dpkg -i curl_*.deb
-RUN dpkg -i libcurl3-*.deb
-RUN dpkg -i libcurl3-gnutls_*.deb
-RUN dpkg -i libcurl4-gnutls-dev_7.58.0-2ubuntu3.8_amd64.deb libcurl4_7.58.0-2ubuntu3.8_amd64.deb
+RUN apt source curl
+WORKDIR /opt/curl-*/
+RUN sed -i -e "s@CONFIGURE_ARGS += --without-libssh2@CONFIGURE_ARGS += --with-libssh2@g" rules
+RUN apt install --reinstall libcurl4-openssl-dev
+RUN ./configure --disable-shared
+RUN make
+RUN make install
+
+# RUN apt-get build-dep -y curl
+# RUN ls -lat
+# RUN cd curl-*/debian/ && sed -i -e "s@CONFIGURE_ARGS += --without-libssh2@CONFIGURE_ARGS += --with-libssh2@g" rules
+# RUN cd curl-*/ && dpkg-buildpackage -uc -us -b
+# RUN dpkg -i curl_*.deb
+# RUN dpkg -i libcurl3-*.deb
+# RUN dpkg -i libcurl3-gnutls_*.deb
+# RUN dpkg -i libcurl4-gnutls-dev_7.58.0-2ubuntu3.8_amd64.deb libcurl4_7.58.0-2ubuntu3.8_amd64.deb
 
 # ================================================
 
