@@ -9,7 +9,7 @@ ENV LIBS="-ldl"
 
 # Install cURL libs
 RUN apt-get update
-RUN apt-get install build-essential debhelper libssh-dev -y
+RUN apt-get install build-essential debhelper libssh-dev sudo -y
 
 RUN chown -Rv _apt:root /var/cache/apt/archives/partial/
 RUN chmod -Rv 777 /var/cache/apt/archives/partial/
