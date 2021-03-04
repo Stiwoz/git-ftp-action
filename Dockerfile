@@ -19,6 +19,7 @@ RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 RUN apt-get update
 
 RUN apt-get build-dep -y curl
+RUN ls -lat
 RUN cd curl-*/debian/ && sed -i -e "s@CONFIGURE_ARGS += --without-libssh2@CONFIGURE_ARGS += --with-libssh2@g" rules
 RUN cd curl-*/ && dpkg-buildpackage -uc -us -b
 RUN dpkg -i curl_*.deb
@@ -30,7 +31,7 @@ RUN dpkg -i libcurl4-gnutls-dev_7.58.0-2ubuntu3.8_amd64.deb libcurl4_7.58.0-2ubu
 
 WORKDIR /
 
-RUN apt-get install bash curl git -y
+RUN apt-get install bash git -y
 RUN curl https://raw.githubusercontent.com/git-ftp/git-ftp/1.6.0/git-ftp > /bin/git-ftp
 RUN chmod 755 /bin/git-ftp
 
