@@ -11,7 +11,6 @@ ENV LIBS="-ldl"
 RUN apt-get update
 RUN apt-get install build-essential debhelper libssh-dev -y
 
-RUN mkdir /var/cache/apt/archives/partial/
 RUN chown -Rv _apt:root /var/cache/apt/archives/partial/
 RUN chmod -Rv 755 /var/cache/apt/archives/partial/
 WORKDIR /opt/
