@@ -22,6 +22,8 @@ RUN apt-get update --fix-missing
 
 RUN apt source curl -y
 WORKDIR /opt/curl-*/
+RUN ls -lath
+RUN pwd
 # RUN sed -i -e "s@CONFIGURE_ARGS += --without-libssh2@CONFIGURE_ARGS += --with-libssh2@g" rules
 RUN apt install --reinstall libcurl4-openssl-dev -y
 RUN ./configure --disable-shared
