@@ -20,9 +20,7 @@ RUN cp /etc/apt/sources.list /etc/apt/sources.list~
 RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 RUN apt-get update --fix-missing
 
-USER _apt
 RUN apt source curl -y
-USER root
 WORKDIR /opt/curl-*/
 # RUN sed -i -e "s@CONFIGURE_ARGS += --without-libssh2@CONFIGURE_ARGS += --with-libssh2@g" rules
 RUN apt install --reinstall libcurl4-openssl-dev -y
