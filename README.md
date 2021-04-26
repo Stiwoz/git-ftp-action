@@ -1,34 +1,126 @@
-# git-ftp-action
+# SFTP Deploy action
 
-Uses [git-ftp](https://github.com/git-ftp/git-ftp) and [GitHub actions](https://github.com/features/actions) to deploy a GitHub repository to a FTP server.
+> Use this action to deploy your files to server using `SSH Private Key`
 
-**⚠️ Attention:** This action works only with `actions/checkout@v1` for now. Make sure you use `v1` and not `v2` or `master`.
+Original author:
 
-## Example usage
+> [使用 Github Action 部署项目到云服务器](https://zhuanlan.zhihu.com/p/107545396)
 
-```yaml
-name: Deploy via git-ftp
-on: push
-jobs:
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - name: git-ftp push
-        uses: sebastianpopp/git-ftp-action@releases/v3
-        with:
-          url: 'ftp://ftp.example.com/path/'
-          user: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PWD }}
-```
+## Inputs
 
-## Input parameters
+### `username`
 
-| Input parameter | Description                                                                                                      | Required | Default       |
-| --------------- | ---------------------------------------------------------------------------------------------------------------- | -------- | ------------- |
-| url             | git-ftp url (see [documentation](https://github.com/git-ftp/git-ftp/blob/1.6.0/man/git-ftp.1.md#url))            | Yes      | N/A           |
-| user            | FTP username                                                                                                     | Yes      | N/A           |
-| password        | FTP password                                                                                                     | Yes      | N/A           |
-| syncroot        | Specifies a local directory to sync from as if it were the git project root path.                                | No       | `.`           |
-| options         | Additional options (see [documentation](https://github.com/git-ftp/git-ftp/blob/1.6.0/man/git-ftp.1.md#options)) | No       | `--auto-init` |
+**Required** sftp username.
+
+### `server`
+
+**Required** sftp server address.
+
+### `port`
+
+sftp srever port , default `22`
+
+### `ssh_private_key`
+
+**Required** you can copy private_key from your `ssh_private_key.pem file`, keep format, and save at`repo/settings/secrets`
+
+![secret-example](./resource/secret.jpg)
+
+### `local_path`
+
+**Required** `local_path` of you project, if you want put single file:use path like `./myfile`, if you want put directory: use path like `./static/*`, it will put all files under `static` directory. Default to `./*`(will put all files in your repo).
+
+### `remote_path`
+
+**Required** remote_path
+
+### `args`
+
+args of sftp cmd, E.g.`-o ConnectTimeout=5`
+
+## Action Example
+
+    on: [push]
+
+    jobs:
+      deploy_job:
+        runs-on: ubuntu-latest
+        name: deploy
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v2
+          - name: deploy file
+            uses: wlixcc/SFTP-Deploy-Action@v1.0
+            with:
+              username: 'root'
+              server: 'your server ip'
+              ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+              local_path: './static/*'
+              remote_path: '/var/www/app'
+              args: '-o ConnectTimeout=5'
+
+## 1. [Deploy React App Example](https://github.com/wlixcc/React-Deploy)
+
+> If you use nginx, all you need to do is upload the static files to the server after the project is built
+
+    on: [push]
+
+    jobs:
+      deploy_job:
+        runs-on: ubuntu-latest
+        name: build&deploy
+        steps:
+          # To use this repository's private action, you must check out the repository
+          - name: Checkout
+            uses: actions/checkout@v2
+
+          - name: Install Dependencies
+            run: yarn
+          - name: Build
+            run: yarn build
+
+          - name: deploy file to server
+            uses: wlixcc/SFTP-Deploy-Action@v1.0
+            with:
+              username: 'root'
+              server: '${{ secrets.SERVER_IP }}'
+              ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+              local_path: './build/*'
+              remote_path: '/var/www/react-app'
+              args: '-o ConnectTimeout=5'
+
+![react-example](./resource/reactExample.jpg)
+
+## 2.Deploy Umi App Example (Ant Design Pro)
+
+    name: continuous deployment
+    on: [push]
+
+    jobs:
+      deploy_job:
+        runs-on: ubuntu-latest
+        name: build&deploy
+        steps:
+          # To use this repository's private action, you must check out the repository
+          - name: Checkout
+            uses: actions/checkout@v2
+
+          - name: Install umi
+            run: yarn global add umi
+
+          - name: Install Dependencies
+            run: yarn
+          - name: Build
+            run: yarn build
+
+          - name: deploy file to server
+            uses: wlixcc/SFTP-Deploy-Action@v1.0
+            with:
+              username: 'root'
+              server: '${{ secrets.SERVER_IP }}'
+              ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+              local_path: './dist/*'
+              remote_path: '/var/www/umiapp'
+              args: '-o ConnectTimeout=5'
+
+![umi-example](./resource/umiExample.jpg)
