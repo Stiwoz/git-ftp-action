@@ -24,7 +24,7 @@ sftp srever port , default `22`
 
 **Required** you can copy private_key from your `ssh_private_key.pem file`, keep format, and save at`repo/settings/secrets`
 
-![secret-example](./resource/secret.jpg)
+![secret-example](./resources/secret.jpg)
 
 ### `local_path`
 
@@ -89,7 +89,7 @@ args of sftp cmd, E.g.`-o ConnectTimeout=5`
               remote_path: '/var/www/react-app'
               args: '-o ConnectTimeout=5'
 
-![react-example](./resource/reactExample.jpg)
+![react-example](./resources/reactExample.jpg)
 
 ## 2.Deploy Umi App Example (Ant Design Pro)
 
@@ -123,4 +123,4 @@ args of sftp cmd, E.g.`-o ConnectTimeout=5`
               remote_path: '/var/www/umiapp'
               args: '-o ConnectTimeout=5'
 
-![umi-example](./resource/umiExample.jpg)
+![umi-example](./resources/umiExample.jpg)
