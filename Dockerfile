@@ -1,41 +1,15 @@
-FROM ubuntu:18.04
+# Container image that runs your code
+FROM alpine:3.10
 
-COPY LICENSE README.md /
-
-# Set cURL compile flags
-ENV CPPFLAGS=-I/usr/local/include
-ENV LDFLAGS="-L/usr/local/lib -Wl,-rpath,/usr/local/lib"
-ENV LIBS="-ldl"
-
-# Install cURL libs
-RUN apt-get update
-RUN apt-get install build-essential debhelper libssh-dev sudo -y
-
-RUN chown -Rv _apt:root /var/cache/apt/archives/partial/
-RUN chmod -Rv 777 /var/cache/apt/archives/partial/
-WORKDIR /opt/
-
-# Fetch cURL source code
-RUN cp /etc/apt/sources.list /etc/apt/sources.list~
-RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
-RUN apt-get update --fix-missing
-
-RUN apt source curl -y
-WORKDIR /opt/curl-7.58.0/
-# RUN sed -i -e "s@CONFIGURE_ARGS += --without-libssh2@CONFIGURE_ARGS += --with-libssh2@g" rules
-RUN apt install --reinstall libcurl4-openssl-dev -y
-RUN ./configure --disable-shared
-RUN make
-RUN make install
-
-# ================================================
-
-WORKDIR /
-
-RUN apt-get install bash git -y
-RUN curl https://raw.githubusercontent.com/git-ftp/git-ftp/1.6.0/git-ftp > /bin/git-ftp
-RUN chmod 755 /bin/git-ftp
-
+# Copies your code file from your action repository to the filesystem path `/` of the container
 COPY entrypoint.sh /entrypoint.sh
 
+#Make sure to make you entrypoint.sh file executable:
+RUN chmod 777 entrypoint.sh
+
+RUN apk update
+RUN apk add --no-cache openssh
+
+
+# Code file to execute when the docker container starts up (`entrypoint.sh`)
 ENTRYPOINT ["/entrypoint.sh"]
